@@ -11,22 +11,17 @@ provider "aws" {
   region = "eu-north-1"
 }
 
-resource "aws_instance" "servernode" {
-  ami                    = "ami-0a716d3f3b16d290c"
-  instance_type          = "t3.micro"
-  subnet_id              = "subnet-08b45c3be43b3f7ab"
-  vpc_security_group_ids = [aws_security_group.maingroup.id]
-  key_name               = "1"
 
-  tags = {
-    Name = "DeployVM"
-  }
+resource "aws_key_pair" "deployer_key" {
+  key_name   = var.key_name
+  public_key = var.public_key
 }
+
 
 resource "aws_security_group" "maingroup" {
   name        = "main_sg"
   description = "Allow SSH and HTTP access"
-  vpc_id      = "vpc-0dcd0752cba421c53"
+  vpc_id      = var.vpc_id
 
   ingress = [
     {
@@ -68,7 +63,22 @@ resource "aws_security_group" "maingroup" {
   ]
 }
 
+
+resource "aws_instance" "servernode" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  subnet_id              = var.subnet_id
+  vpc_security_group_ids = [aws_security_group.maingroup.id]
+  key_name               = aws_key_pair.deployer_key.key_name
+
+  tags = {
+    Name = "DeployVM"
+  }
+}
+
+
 output "instance_public_ip" {
   value = aws_instance.servernode.public_ip
 }
+
 

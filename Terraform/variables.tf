@@ -34,3 +34,13 @@ variable "key_name" {
   default     = "1"
 }
 
+variable "public_key" {
+  description = "Public SSH key for EC2 instance"
+  type        = string
+}
+
+variable "private_key" {
+  description = "Private SSH key content"
+  type        = string
+  sensitive   = true
+}
