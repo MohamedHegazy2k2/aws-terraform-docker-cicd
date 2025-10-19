@@ -30,7 +30,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init -backend-config="bucket=$TF_STATE_BUCKET_NAME" -backend-config="region=eu-north-1"
-        working-directory: ./terraform
+        working-directory: ./Terraform
 
       - name: Terraform Plan
         id: plan
@@ -45,17 +45,17 @@ jobs:
           -var="public_key=$PUBLIC_SSH_KEY" \
           -var="private_key=$PRIVATE_SSH_KEY" \
           -out=PLAN
-        working-directory: ./terraform
+        working-directory: ./Terraform
 
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve PLAN
-        working-directory: ./terraform
+        working-directory: ./Terraform
 
       - name: Set output
         id: set-ip
         run: echo "instance_public_ip=$(terraform output -raw instance_public_ip)" >> $GITHUB_OUTPUT
-        working-directory: ./terraform
+        working-directory: ./Terraform
 
   deploy-app:
     runs-on: ubuntu-latest
